@@ -156,81 +156,70 @@ export default class SortableTable {
     let elTable = document.createElement("div");
     elTable.className = "sortable-table";
 
+    let headerCellInnerHtml = "";
+
     //++ render header
-    let elHeader = document.createElement("div");
-    elHeader.dataset.element = "header";
-    elHeader.classList.add("sortable-table__header");
-    elHeader.classList.add("sortable-table__row");
-
     this.headerConfig.forEach((headerCell) => {
-      let elHeaderCell = document.createElement("div");
-
-      elHeaderCell.className = "sortable-table__cell";
-      elHeaderCell.dataset.id = headerCell.id;
-      elHeaderCell.dataset.sortable = headerCell.sortable;
-
-      let elHeaderCellName = document.createElement("span");
-      elHeaderCellName.append(document.createTextNode(headerCell.title));
-
-      elHeaderCell.append(elHeaderCellName);
-
-      if (headerCell.order) {
-        elHeaderCell.dataset.order = headerCell.order;
-      }
-
-      const stylingSpan = document.createElement("span");
-      stylingSpan.dataset.element = "arrow";
-      stylingSpan.classList.add("sortable-table__sort-arrow");
-
-      const stylingSpanArrow = document.createElement("span");
-      stylingSpanArrow.className = "sort-arrow";
-
-      stylingSpan.append(stylingSpanArrow);
-      elHeaderCell.append(stylingSpan);
-
-      elHeader.append(elHeaderCell);
+      headerCellInnerHtml += `
+        <div class="sortable-table__cell" data-id="${
+          headerCell.id
+        }" data-sortable="${headerCell.sortable}" data-order="${
+        headerCell.order ? headerCell.order : ""
+      }">
+          <span>
+            ${headerCell.title}
+          </span>
+          <span data-element="arrow" class="sortable-table__sort-arrow">
+            <span class="sort-arrow">
+            </span>
+          </span>
+        </div>
+      `;
     });
 
-    elTable.append(elHeader);
+    let elTableHeaderInnerHTML = `
+      <div data-element="header" class="sortable-table__header sortable-table__row">
+        ${headerCellInnerHtml}  
+      </div>
+    `;
     //--
     //++ render data
-    let elData = document.createElement("div");
-    elData.className = "sortable-table__body";
-    elData.dataset.element = "body";
+    let dataCellInnerHtml = "";
 
     this.data.forEach((dataVal) => {
-      let elDataHref = document.createElement("a");
-      elDataHref.href = `/products/${dataVal.id}`;
-      elDataHref.className = "sortable-table__row";
+      let dataHrefCellInnerHtml = "";
 
       this.headerConfig.forEach((headerConfigData) => {
         if (
           headerConfigData.template &&
           typeof headerConfigData.template === "function"
         ) {
-          let tmpDiv = document.createElement("div");
-          tmpDiv.innerHTML = headerConfigData.template(
-            dataVal[headerConfigData.id]
-          );
-
-          elDataHref.append(tmpDiv.firstElementChild); // можно ли так делать?
+          dataHrefCellInnerHtml += `
+              ${headerConfigData.template(dataVal[headerConfigData.id])}
+          `;
         } else {
-          let elDataCell = document.createElement("div");
-          elDataCell.className = "sortable-table__cell";
-
-          elDataCell.append(
-            document.createTextNode(dataVal[headerConfigData.id])
-          );
-
-          elDataHref.append(elDataCell);
+          dataHrefCellInnerHtml += `
+             <div class="sortable-table__cell">
+              ${dataVal[headerConfigData.id]}
+             </div>
+          `;
         }
       });
 
-      elData.append(elDataHref);
+      dataCellInnerHtml += `
+        <a href="/products/${dataVal.id}" class="sortable-table__row">
+          ${dataHrefCellInnerHtml}
+        </a>
+      `;
     });
 
-    elTable.append(elData);
-    //--
+    let elTableDataInnderHTML = `
+      <div class="sortable-table__body" data-element="body">
+        ${dataCellInnerHtml}
+      </div>
+    `;
+
+    elTable.innerHTML = elTableHeaderInnerHTML + elTableDataInnderHTML;
 
     return elTable;
   }
