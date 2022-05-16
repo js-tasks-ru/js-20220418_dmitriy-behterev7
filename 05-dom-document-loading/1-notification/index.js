@@ -16,7 +16,7 @@ export default class NotificationMessage {
     let msgElNotification = document.createElement("div");
     msgElNotification.classList.add("notification");
     msgElNotification.classList.add(this.type);
-    msgElNotification.style = `--value:${this.duration / 1000}s`;
+    msgElNotification.style.cssText = `--value:${this.duration / 1000}s`;
 
     let msgElTimer = document.createElement("div");
     msgElTimer.className = "timer";
