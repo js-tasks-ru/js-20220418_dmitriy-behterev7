@@ -13,24 +13,24 @@ export default class NotificationMessage {
       return el;
     }
 
-    let msgElNotification = document.createElement("div");
+    const msgElNotification = document.createElement("div");
     msgElNotification.classList.add("notification");
     msgElNotification.classList.add(this.type);
     msgElNotification.style.cssText = `--value:${this.duration / 1000}s`;
 
-    let msgElTimer = document.createElement("div");
+    const msgElTimer = document.createElement("div");
     msgElTimer.className = "timer";
 
     msgElNotification.append(msgElTimer);
 
-    let msgElInnerWrapper = document.createElement("div");
+    const msgElInnerWrapper = document.createElement("div");
     msgElInnerWrapper.className = "inner-wrapper";
 
-    let msgNotificationHeader = document.createElement("div");
+    const msgNotificationHeader = document.createElement("div");
     msgNotificationHeader.className = "notification-header";
     msgNotificationHeader.append(document.createTextNode(this.type));
 
-    let msgElNotificationBody = document.createElement("div");
+    const msgElNotificationBody = document.createElement("div");
     msgElNotificationBody.className = "notification-body";
 
     msgElNotificationBody.append(document.createTextNode(this.msg));
