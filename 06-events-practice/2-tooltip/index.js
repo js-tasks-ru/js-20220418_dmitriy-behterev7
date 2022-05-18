@@ -1,19 +1,3 @@
-// class Singleton {
-//   static instance;
-
-//   constructor() {
-//     if (instance) {
-//       return instance;
-//     }
-
-//     this.instance = this;
-//   }
-
-//   foo() {
-//     // ...
-//   }
-// }
-
 class Tooltip {
   _tooltipDiv = null;
   static instance;
