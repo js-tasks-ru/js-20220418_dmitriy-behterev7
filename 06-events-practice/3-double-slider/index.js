@@ -81,144 +81,85 @@ export default class DoubleSlider {
     }
   }
 
-  initializeEvents() {
-    const slider = this.element.querySelector(".range-slider__inner");
-    const leftHandle = this.element.querySelector(".range-slider__thumb-left");
+  pointerDown = (event) => {
+    event.preventDefault();
+    const handle = event.target;
 
+    const slider = document.querySelector(".range-slider__inner");
     // ширина слайдера в px
     const sliderWidth = slider.getBoundingClientRect().width;
 
+    let shiftX = event.clientX - handle.getBoundingClientRect().left;
+
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUp);
+
     const context = this;
 
-    leftHandle.onpointerdown = function (event) {
-      event.preventDefault();
+    function onPointerMove(event) {
+      let newLeft =
+        event.clientX -
+        shiftX -
+        slider.getBoundingClientRect().left +
+        handle.getBoundingClientRect().width;
 
-      let shiftX = event.clientX - leftHandle.getBoundingClientRect().left;
-
-      document.addEventListener("pointermove", onMouseMove);
-      document.addEventListener("mouseup", onMouseUp);
-
-      function onMouseMove(event) {
-        let newLeft =
-          event.clientX -
-          shiftX -
-          slider.getBoundingClientRect().left +
-          leftHandle.getBoundingClientRect().width;
-
-        //console.log("newLeft", newLeft);
-
-        if (newLeft < 0) {
-          newLeft = 0;
-        }
-
-        let rightEdge =
-          slider.offsetWidth -
-          leftHandle.offsetWidth +
-          leftHandle.getBoundingClientRect().width;
-
-        if (newLeft > rightEdge) {
-          newLeft = rightEdge;
-        }
-
-        leftHandle.style.left = newLeft + "px";
-
-        // относительная величина пути, пройденная левым бегунком с начала слайдера
-        const sliderDelta =
-          leftHandle.getBoundingClientRect().left -
-          shiftX -
-          slider.getBoundingClientRect().left +
-          leftHandle.getBoundingClientRect().width;
-
-        // пересчитаем длины в px в "единицы" слайдера
-        const leftValue =
-          Math.round(
-            (sliderDelta * (context.max - context.min)) / sliderWidth
-          ) + context.min;
-
-        document.querySelector('[data-element="from"]').textContent =
-          context.formatValue(leftValue);
-
-        const rangeSelectEvent = new CustomEvent("range-select", {
-          cancelable: true,
-          detail: {
-            leftHandle: true,
-            leftValue: leftValue,
-          },
-        });
-        leftHandle.dispatchEvent(rangeSelectEvent);
+      if (newLeft < 0) {
+        newLeft = 0;
       }
 
-      function onMouseUp() {
-        document.removeEventListener("mouseup", onMouseUp);
-        document.removeEventListener("pointermove", onMouseMove);
-      }
-    };
+      let rightEdge =
+        slider.offsetWidth -
+        handle.offsetWidth +
+        handle.getBoundingClientRect().width;
 
+      if (newLeft > rightEdge) {
+        newLeft = rightEdge;
+      }
+
+      handle.style.left = newLeft + "px";
+
+      // относительная величина пути, пройденная левым бегунком с начала слайдера
+      const sliderDelta =
+        handle.getBoundingClientRect().left -
+        shiftX -
+        slider.getBoundingClientRect().left +
+        handle.getBoundingClientRect().width;
+
+      // пересчитаем длины в px в "единицы" слайдера
+      const value =
+        Math.round((sliderDelta * (context.max - context.min)) / sliderWidth) +
+        context.min;
+
+      document.querySelector(
+        `[data-element="${handle.className.includes("left") ? "from" : "to"}"]`
+      ).textContent = context.formatValue(value);
+
+      const rangeSelectEvent = new CustomEvent("range-select", {
+        cancelable: true,
+        detail: {},
+      });
+      handle.dispatchEvent(rangeSelectEvent);
+    }
+
+    function onPointerUp() {
+      document.removeEventListener("pointerup", onPointerUp);
+      document.removeEventListener("pointermove", onPointerMove);
+    }
+  };
+
+  initializeEvents() {
+    const leftHandle = this.element.querySelector(".range-slider__thumb-left");
+    leftHandle.addEventListener("pointerdown", this.pointerDown);
     leftHandle.ondragstart = function () {
       return false;
     };
 
-    const rightHandle = document.querySelector(".range-slider__thumb-right");
-    rightHandle.onpointerdown = function (event) {
-      event.preventDefault();
-
-      let shiftX = event.clientX - rightHandle.getBoundingClientRect().left;
-
-      document.addEventListener("pointermove", onMouseMove);
-      document.addEventListener("mouseup", onMouseUp);
-
-      function onMouseMove(event) {
-        let newLeft =
-          event.clientX -
-          shiftX -
-          slider.getBoundingClientRect().left +
-          rightHandle.getBoundingClientRect().width;
-
-        if (newLeft < 0) {
-          newLeft = 0;
-        }
-
-        let rightEdge =
-          slider.offsetWidth -
-          rightHandle.offsetWidth +
-          rightHandle.getBoundingClientRect().width;
-
-        if (newLeft > rightEdge) {
-          newLeft = rightEdge;
-        }
-
-        rightHandle.style.left = newLeft + "px";
-
-        // относительная величина пути, пройденная левым бегунком с начала слайдера
-        const sliderDelta =
-          rightHandle.getBoundingClientRect().left -
-          shiftX -
-          slider.getBoundingClientRect().left +
-          rightHandle.getBoundingClientRect().width;
-
-        // пересчитаем длины в px в "единицы" слайдера
-        const rightValue =
-          Math.round(
-            (sliderDelta * (context.max - context.min)) / sliderWidth
-          ) + context.min;
-
-        document.querySelector('[data-element="to"]').textContent =
-          context.formatValue(rightValue);
-
-        const rangeSelectEvent = new CustomEvent("range-select", {
-          cancelable: true,
-          detail: {
-            rightHandle: true,
-            rightValue: rightValue,
-          },
-        });
-        rightHandle.dispatchEvent(rangeSelectEvent);
-      }
-
-      function onMouseUp() {
-        document.removeEventListener("mouseup", onMouseUp);
-        document.removeEventListener("pointermove", onMouseMove);
-      }
+    const rightHandle = this.element.querySelector(
+      ".range-slider__thumb-right"
+    );
+    rightHandle.addEventListener("pointerdown", this.pointerDown);
+    rightHandle.ondragstart = function () {
+      return false;
     };
   }
 }
