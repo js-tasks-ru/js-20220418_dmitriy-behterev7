@@ -54,6 +54,11 @@ export default class DoubleSlider {
             <span data-element="to">${to}</span>
         `;
     document.body.append(this.element);
+
+    this._leftHandle = this.element.querySelector(".range-slider__thumb-left");
+    this._rightHandle = this.element.querySelector(
+      ".range-slider__thumb-right"
+    );
   }
 
   moveHandlebars() {
@@ -95,6 +100,8 @@ export default class DoubleSlider {
     document.addEventListener("pointerup", onPointerUp);
 
     const context = this;
+    const _leftHandle = this._leftHandle;
+    const _rightHandle = this._rightHandle;
 
     function onPointerMove(event) {
       let newLeft =
@@ -111,6 +118,25 @@ export default class DoubleSlider {
         slider.offsetWidth -
         handle.offsetWidth +
         handle.getBoundingClientRect().width;
+
+      if (handle.closest(".range-slider__thumb-left")) {
+        // это левая рукоятка
+        const maxRight =
+          _rightHandle.getBoundingClientRect().left -
+          slider.getBoundingClientRect().left;
+
+        rightEdge = Math.min(rightEdge, maxRight);
+      } else {
+        // это правая рукоятка
+        const minLeft =
+          _leftHandle.getBoundingClientRect().left -
+          slider.getBoundingClientRect().left +
+          _leftHandle.getBoundingClientRect().width;
+
+        if (newLeft < minLeft) {
+          newLeft = minLeft;
+        }
+      }
 
       if (newLeft > rightEdge) {
         newLeft = rightEdge;
