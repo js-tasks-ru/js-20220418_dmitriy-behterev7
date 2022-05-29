@@ -30,11 +30,6 @@ export default class Page {
         componentInstance.update(from, to);
       }
     }
-
-    // this.components.sortableTable.update(data);
-    // this.components.ordersChart.update(from, to);
-    // this.components.salesChart.update(from, to);
-    // this.components.customersChart.update(from, to);
   }
 
   initComponents() {
