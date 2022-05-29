@@ -21,42 +21,44 @@ export default class SortableList {
       // ближайший родитель, внутри которого кликнули
       const clickedEl = event.target.closest(".sortable-list__item");
 
+      if (!clickedEl) {
+        return;
+      }
+
       // если он есть..
-      if (clickedEl) {
-        if (event.target.closest("[data-grab-handle]")) {
-          event.preventDefault();
+      if (event.target.closest("[data-grab-handle]")) {
+        event.preventDefault();
 
-          // позиция переносимого элемента в массиве эл-тов картинок
-          this.elementInitialIndex = [...this.element.children].indexOf(
-            clickedEl
-          );
+        // позиция переносимого элемента в массиве эл-тов картинок
+        this.elementInitialIndex = [...this.element.children].indexOf(
+          clickedEl
+        );
 
-          this.elDraggingNow = clickedEl;
+        this.elDraggingNow = clickedEl;
 
-          // плейсхолдер, задействуется в тестах
-          this.placeholder = document.createElement("li");
-          this.placeholder.className = "sortable-list__placeholder";
+        // плейсхолдер, задействуется в тестах
+        this.placeholder = document.createElement("li");
+        this.placeholder.className = "sortable-list__placeholder";
 
-          // >>>>>>>>>>>>>> подсмотрено, сам бы не додумался >>>>>>>>>>>>>>>>
-          clickedEl.style.width = `${clickedEl.offsetWidth}px`;
-          clickedEl.style.height = `${clickedEl.offsetHeight}px`;
+        // >>>>>>>>>>>>>> подсмотрено, сам бы не додумался >>>>>>>>>>>>>>>>
+        clickedEl.style.width = `${clickedEl.offsetWidth}px`;
+        clickedEl.style.height = `${clickedEl.offsetHeight}px`;
 
-          this.placeholder.style.width = clickedEl.style.width;
-          this.placeholder.style.height = clickedEl.style.height;
+        this.placeholder.style.width = clickedEl.style.width;
+        this.placeholder.style.height = clickedEl.style.height;
 
-          clickedEl.classList.add("sortable-list__item_dragging");
+        clickedEl.classList.add("sortable-list__item_dragging");
 
-          clickedEl.after(this.placeholder);
+        clickedEl.after(this.placeholder);
 
-          document.addEventListener("pointermove", this.pointerMove);
-          document.addEventListener("pointerup", this.pointerUp);
-        }
+        document.addEventListener("pointermove", this.pointerMove);
+        document.addEventListener("pointerup", this.pointerUp);
+      }
 
-        if (event.target.closest("[data-delete-handle]")) {
-          event.preventDefault();
+      if (event.target.closest("[data-delete-handle]")) {
+        event.preventDefault();
 
-          clickedEl.remove();
-        }
+        clickedEl.remove();
       }
     });
   }

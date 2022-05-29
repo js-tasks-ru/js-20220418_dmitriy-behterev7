@@ -3,7 +3,7 @@ import fetchJson from "./utils/fetch-json.js";
 const BACKEND_URL = "https://course-js.javascript.ru";
 
 async function scrollHandler() {
-  const bottom = this.element.getBoundingClientRect().bottom;
+  const { bottom } = this.element.getBoundingClientRect();
 
   // console.log("высота документа", document.documentElement.clientHeight);
   // console.log(
@@ -210,7 +210,10 @@ export default class SortableTable {
     }
 
     // скопирую глубоко. Сортировка меняет исходный массив
-    const _initialData = JSON.parse(JSON.stringify(this.data));
+    // Дмитрий - deep copy, дорогая операция
+    // const _initialData = JSON.parse(JSON.stringify(this.data));
+    // shallow copy подойдет также
+    const _initialData = [...this.data];
 
     let sortType = column.sortType;
     switch (sortType) {
